@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var totalItems = 0;
+
 //Setting Up The Connections
 var connection = mysql.createConnection
 ({
@@ -17,7 +18,8 @@ connection.connect(function(error)
     if (error) throw (error);
     console.log("Welcome To Bamazon!\n");
     showAll();
-    connection.end();
+    buyProduct();
+    // connection.end();
 })
 
 //Function To Show All Of The Items In The Product Table
@@ -30,25 +32,33 @@ function showAll()
     })
 }
 
+//This Function Allows The User To Pick An Item And Buy As Many As There Is Available
 function buyProduct()
 {
+    //Prompt To Get The Item And How Many To Look For
     inquirer.prompt([
         {
             type: "input",
             message: "What is the ID of the item that you would like to buy?",
             name: "idSelection",
+
+            //Making Sure The User Is Picking Something In The Database
             validate: function(value)
             {
                 if (value < 1 || value > totalItems)
+                    return false;
+                else if (isNaN(value))
                     return false;
                 else
                     return true;
             }
         },
+
+        //Asks The User How Many They Would Like To Buy
         {
             type: "input",
             message: "How many would you like to buy?",
-            name: "quanitySelection",
+            name: "quantitySelection",
             validate: function(value)
             {
                 if (isNaN(value))
@@ -57,9 +67,29 @@ function buyProduct()
                     return true;
             }            
         }
-    ]).then(function()
+    ]).then(function(answers)
     {
+        //Query To View All Products (Should Be 1) Under That item_id
+        connection.query("select * from products where ?", [{item_id: answers.idSelection}], function(error, response)
+        {
+            if (error) throw (error);
+            var totalPrice = 0;
 
+            //If There Isn't Enough, Won't Process The Sale
+            if (answers.quantitySelection > parseInt(response[0].stock_quantity))
+                console.log("Insufficent Quanity");
+
+            //Else If There Is Enough, Removes The Quantity From The Table
+            else
+            {
+                totalPrice = answers.quantitySelection * response[0].price;
+
+                //UPDATE The Table
+
+                console.log("Your total is $" + totalPrice);
+            }
+            connection.end();
+        })
     })
 }
 
