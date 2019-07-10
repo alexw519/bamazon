@@ -13,8 +13,18 @@ connection.connect(function(error)
 {
     if (error) throw (error);
     console.log("Welcome To Bamazon!\n");
+    showAll();
     connection.end();
 })
+
+function showAll()
+{
+    connection.query("select * from products", function(error, response)
+    {
+        if (error) throw (error);
+        displayItems(response);
+    })
+}
 
 function displayItems(response)
 {
@@ -22,9 +32,9 @@ function displayItems(response)
     {
         console.log
         (
-            "ID: " + response[i].item_id,
-            "Name: " + response[i].product_name,
-            "Price: " + response[i].price
+            "Name: " + response[i].product_name + "\n",
+            "ID: " + response[i].item_id + "\n",
+            "Price: " + response[i].price + "\n"
         )
     }
 }
