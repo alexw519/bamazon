@@ -19,7 +19,6 @@ connection.connect(function(error)
     console.log("Welcome To Bamazon!\n");
     showAll();
     buyProduct();
-    // connection.end();
 })
 
 //Function To Show All Of The Items In The Product Table
@@ -84,9 +83,21 @@ function buyProduct()
             {
                 totalPrice = answers.quantitySelection * response[0].price;
 
-                //UPDATE The Table
+                //Query To Remove The Amount Purchased From The Table
+                connection.query("update products set ? where ?",
+                [{
+                    stock_quantity: response[0].stock_quantity - answers.quantitySelection
+                },
+                {
+                    item_id: answers.idSelection
+                },
+                function(error, res)
+                {
+                    if (error) throw (error);
+                }])
 
-                console.log("Your total is $" + totalPrice);
+                //Tells The User The Total Price
+                console.log("\nYour total is $" + totalPrice);
             }
             connection.end();
         })
