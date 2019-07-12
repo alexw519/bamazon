@@ -73,6 +73,7 @@ function buyProduct()
         {
             if (error) throw (error);
             var totalPrice = 0;
+            var profit = 0;
 
             //If There Isn't Enough, Won't Process The Sale
             if (answers.quantitySelection > parseInt(response[0].stock_quantity))
@@ -82,11 +83,15 @@ function buyProduct()
             else
             {
                 totalPrice = answers.quantitySelection * response[0].price;
+                profit = totalPrice + response[0].product_sales;
 
                 //Query To Remove The Amount Purchased From The Table
-                connection.query("update products set ? where ?",
+                connection.query("update products set ?, ? where ?",
                 [{
                     stock_quantity: response[0].stock_quantity - answers.quantitySelection
+                },
+                {
+                    product_sales: profit
                 },
                 {
                     item_id: answers.idSelection

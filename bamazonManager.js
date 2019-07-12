@@ -20,6 +20,7 @@ connection.connect(function(error)
     viewMenu();
 })
 
+//View The Options Which Call A Different Function
 function viewMenu()
 {
     inquirer.prompt([
