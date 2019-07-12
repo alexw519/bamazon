@@ -149,15 +149,16 @@ function addProduct()
     {
         connection.query("insert into products (product_name, department_name, price, stock_quantity) values (?, ?, ?, ?)",
         [
-            {product_name: answers.product},
-            {department_name: answers.department},
-            {price: answers.cost},
-            {stock_quantity: answers.stock},
+            answers.product,
+            answers.department,
+            answers.cost,
+            answers.stock,
             function (error, response)
             {
                 if (error) throw (error);
-                console.log("Added " + answers.product + " to inventory!");
-        }])
+
+            }])
+        console.log("Added " + answers.product + " to inventory!");
         connection.end();
     })
 
