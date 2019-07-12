@@ -160,20 +160,19 @@ function addProduct()
         }
     ]).then(function(answers)
     {
-        connection.query("insert into products (product_name, department_name, price, stock_quantity) values (?, ?, ?, ?)",
+        connection.query("insert into products (product_name, department_name, price, stock_quantity, product_sales) values (?, ?, ?, ?, 0)",
         [
             answers.product,
             answers.department,
             answers.cost,
-            answers.stock,
+            answers.stock],
             function (error, response)
             {
                 if (error) throw (error);
-                console.log("Added " + answers.product + " to inventory!");
+                console.log("Added " + answers.product + " to inventory!\n");
                 viewMenu();
-            }])
+            })
     })
-
 }
 
 //Functon That Displays The Name, ID, & Price Of The Items From The Query

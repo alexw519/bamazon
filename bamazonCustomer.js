@@ -38,7 +38,7 @@ function buyProduct()
     inquirer.prompt([
         {
             type: "input",
-            message: "What is the ID of the item that you would like to buy?",
+            message: "What is the ID of the item that you would like to buy?\n",
             name: "idSelection",
 
             //Making Sure The User Is Picking Something In The Database

@@ -1,5 +1,12 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("cli-table");
+
+var table = new Table
+({
+    head: ["Department Name", "Product Sales"],
+    colWidths: [20,15]
+});
 
 //Setting Up The Connection
 var connection = mysql.createConnection
@@ -11,7 +18,13 @@ var connection = mysql.createConnection
     database: "bamazon"
 })
 
-viewMenu();
+//Connecting To The Database
+connection.connect(function(error)
+{
+    if (error) throw (error);
+    console.log("Bamazon Supervisor Options\n");
+    viewMenu();
+})
 
 //View The Options Which Call A Different Function
 function viewMenu()
@@ -44,12 +57,17 @@ function viewMenu()
 
 function viewSales()
 {
-    //select department_name, format(sum(product_sales), 1) as total_sales from bamazon.products group by department_name;
     connection.query("select department_name, format(sum(product_sales), 1) as total_sales from products group by department_name",
     function(error, response)
     {
         if (error) throw (error);
+        for (i = 0; i < response.length; i++)
+        {
+            table.push([response[i].department_name, response[i].total_sales]);
+        }
+        console.log(table.toString());
     })
+    connection.end();
 }
 
 function createDepartment()
@@ -67,15 +85,15 @@ function createDepartment()
         }
     ]).then(function(answers)
     {
-        connection.query("insert into departments (department_name, costs) values (?, ?)",
+        connection.query("insert into departments (department_name, over_head_costs) values (?, ?)",
         [
             answers.depart_name,
-            answers.costs,
+            answers.costs],
             function (error, response)
             {
                 if (error) throw (error);
-                console.log("Added a " + answers.depart_name + "!");
+                console.log("Added a " + answers.depart_name + " Department!\n");
                 viewMenu();
-            }])
+            })
     })
 }
