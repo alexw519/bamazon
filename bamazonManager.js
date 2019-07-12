@@ -53,11 +53,21 @@ function viewMenu()
 
 function showAll()
 {
+    connection.query("select * from products", function(error, response)
+    {
+        if (error) throw (error);
+        displayItems(response);
+    })
     connection.end();
 }
 
 function showLow()
 {
+    connection.query("select * from products where stock_quantity < 5", function(error, response)
+    {
+        if (error) throw (error);
+        displayItems(response);
+    })
     connection.end();
 }
 
@@ -69,4 +79,19 @@ function addInventory()
 function addProduct()
 {
     connection.end();
+}
+
+//Functon That Displays The Name, ID, & Price Of The Items From The Query
+function displayItems(response)
+{
+    for (i = 0; i < response.length; i++)
+    {
+        console.log
+        (
+            "Name: " + response[i].product_name + "\n",
+            "ID: " + response[i].item_id + "\n",
+            "Price: " + response[i].price + "\n",
+            "Quantity: " + response[i].stock_quantity + "\n"
+        )
+    }
 }
