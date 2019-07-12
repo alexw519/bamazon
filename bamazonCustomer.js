@@ -2,7 +2,7 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var totalItems = 0;
 
-//Setting Up The Connections
+//Setting Up The Connection
 var connection = mysql.createConnection
 ({
     host: "127.0.0.1",
