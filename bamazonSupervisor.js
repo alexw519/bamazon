@@ -4,8 +4,8 @@ var Table = require("cli-table");
 
 var table = new Table
 ({
-    head: ["Department Name", "Product Sales"],
-    colWidths: [20,15]
+    head: ["Department ID", "Department Name", "Over Head Costs", "Total Sales", "Profit"],
+    colWidths: [15,20,20,15,10]
 });
 
 //Setting Up The Connection
@@ -57,17 +57,19 @@ function viewMenu()
 
 function viewSales()
 {
-    connection.query("select department_name, format(sum(product_sales), 1) as total_sales from products group by department_name",
+    var profit;
+    connection.query("select department_id, products.department_name, departments.over_head_costs, sum(product_sales) as total_sales from bamazon.products right join bamazon.departments on departments.department_name = products.department_name group by products.department_name",
     function(error, response)
     {
         if (error) throw (error);
         for (i = 0; i < response.length; i++)
         {
-            table.push([response[i].department_name, response[i].total_sales]);
+            profit = parseInt(response[i].total_sales) - parseInt(response[i].over_head_costs);
+            table.push([response[i].department_id, response[i].department_name, response[i].over_head_costs, response[i].total_sales, profit]);
         }
-        console.log(table.toString());
+        console.log(table.toString() + "\n");
+        viewMenu();
     })
-    connection.end();
 }
 
 function createDepartment()
