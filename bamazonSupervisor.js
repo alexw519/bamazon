@@ -2,12 +2,6 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 
-var table = new Table
-({
-    head: ["Department ID", "Department Name", "Over Head Costs", "Total Sales", "Profit"],
-    colWidths: [15,20,20,15,10]
-});
-
 //Setting Up The Connection
 var connection = mysql.createConnection
 ({
@@ -55,6 +49,7 @@ function viewMenu()
     });
 }
 
+//Views The Department Infomation Along With The Profit For Each Department
 function viewSales()
 {
     var profit;
@@ -62,6 +57,15 @@ function viewSales()
     function(error, response)
     {
         if (error) throw (error);
+        
+        //Creating The Table To put The Values In
+        var table = new Table
+        ({
+            head: ["Department ID", "Department Name", "Over Head Costs", "Total Sales", "Profit"],
+            colWidths: [15,20,20,15,10]
+        });
+
+        //Adding The Values Into The Table
         for (i = 0; i < response.length; i++)
         {
             profit = parseInt(response[i].total_sales) - parseInt(response[i].over_head_costs);
@@ -72,6 +76,7 @@ function viewSales()
     })
 }
 
+//Function To Create A New Department
 function createDepartment()
 {
     inquirer.prompt([

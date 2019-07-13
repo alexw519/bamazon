@@ -1,5 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("cli-table");
+
 var totalItems = 0;
 
 //Setting Up The Connection
@@ -12,14 +14,42 @@ var connection = mysql.createConnection
     database: "bamazon"
 })
 
-//Connecting To The Database
+//Connecting To The Database And Then Calling The Menu
 connection.connect(function(error)
 {
     if (error) throw (error);
     console.log("Welcome To Bamazon!\n");
-    showAll();
-    buyProduct();
+    viewMenu();
 })
+
+//View The Options Which Call A Different Function Based On What The User Selects
+function viewMenu()
+{
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "userAction",
+            message: "What would you like to do?",
+            choices: ["View Products", "Buy Product", "Exit"]
+        }
+    ]).then(function(user)
+    {
+        switch (user.userAction)
+        {
+            case "View Products":
+                showAll();
+                break;
+
+            case "Buy Product":
+                buyProduct();
+                break;
+
+            case "Exit":
+                connection.end();
+                break;
+        }
+    });
+}
 
 //Function To Show All Of The Items In The Product Table
 function showAll()
@@ -104,7 +134,7 @@ function buyProduct()
                 //Tells The User The Total Price
                 console.log("\nYour total is $" + totalPrice);
             }
-            connection.end();
+            viewMenu();
         })
     })
 }
@@ -112,14 +142,18 @@ function buyProduct()
 //Functon That Displays The Name, ID, & Price Of The Items From The Query
 function displayItems(response)
 {
+    //Creating A Table To Put Everything In
+    var table = new Table
+    ({
+        head: ["Product ID", "Name", "Price"],
+        colWidths: [12,30,20]
+    });
+    
+    //Adds The Values To A The Table
     for (i = 0; i < response.length; i++)
     {
-        totalItems++;
-        console.log
-        (
-            "Name: " + response[i].product_name + "\n",
-            "ID: " + response[i].item_id + "\n",
-            "Price: " + response[i].price + "\n"
-        )
+        table.push([response[i].item_id, response[i].product_name, response[i].price]);
     }
+    console.log(table.toString() + "\n");
+    viewMenu();
 }

@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("cli-table");
 
 var stockQ = 10;
 //Setting Up The Connection
@@ -178,14 +179,17 @@ function addProduct()
 //Functon That Displays The Name, ID, & Price Of The Items From The Query
 function displayItems(response)
 {
+    //Creating The Table
+    var table = new Table
+    ({
+        head: ["Product ID", "Name", "Price", "Quantity"],
+        colWidths: [15,20,20,15]
+    });
+
+    //Putting The Values Into The Table
     for (i = 0; i < response.length; i++)
     {
-        console.log
-        (
-            "Name: " + response[i].product_name + "\n",
-            "ID: " + response[i].item_id + "\n",
-            "Price: " + response[i].price + "\n",
-            "Quantity: " + response[i].stock_quantity + "\n"
-        )
+        table.push([response[i].item_id, response[i].product_name, response[i].price, response[i].stock_quantity]);
     }
+    console.log(table.toString() + "\n");
 }
