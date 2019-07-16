@@ -2,8 +2,6 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 
-var totalItems = 0;
-
 //Setting Up The Connection
 var connection = mysql.createConnection
 ({
@@ -74,9 +72,7 @@ function buyProduct()
             //Making Sure The User Is Picking Something In The Database
             validate: function(value)
             {
-                if (value < 1 || value > totalItems)
-                    return false;
-                else if (isNaN(value))
+                if (isNaN(value))
                     return false;
                 else
                     return true;
@@ -107,7 +103,7 @@ function buyProduct()
 
             //If There Isn't Enough, Won't Process The Sale
             if (answers.quantitySelection > parseInt(response[0].stock_quantity))
-                console.log("Insufficent Quanity");
+                console.log("\nInsufficent Quanity\n");
 
             //Else If There Is Enough, Removes The Quantity From The Table
             else
@@ -132,7 +128,7 @@ function buyProduct()
                 }])
 
                 //Tells The User The Total Price
-                console.log("\nYour total is $" + totalPrice);
+                console.log("\nYour total is $" + totalPrice + "\n");
             }
             viewMenu();
         })
